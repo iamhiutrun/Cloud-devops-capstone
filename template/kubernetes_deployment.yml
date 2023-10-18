@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: capstone_pj
+  name: capstone-pj
   labels:
-    app: capstone_pj
+    app: capstone-pj
   namespace: default
 spec:
   replicas: 3
   progressDeadlineSeconds: 3600
   selector:
     matchLabels:
-      app: capstone_pj
+      app: capstone-pj
   template:
     metadata:
       labels:
-        app: capstone_pj
+        app: capstone-pj
     spec:
       containers:
-        - name: capstone_pj
-          image: 49shine/capstone:3230e0b
+        - name: capstone-pj
+          image: trunghieuluong/udacity-capstone-project:c01d690
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -27,13 +27,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: capstone_pj
+  name: capstone-pj
   labels:
-    app: capstone_pj
+    app: capstone-pj
 spec:
   type: LoadBalancer
   selector:
-    app: capstone_pj
+    app: capstone-pj
   ports:
     - port: 80
       targetPort: 80
