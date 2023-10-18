@@ -5,7 +5,7 @@ Description: 'Amazon EKS Cluster'
 Parameters:
   ClusterName:
     Type: String
-    Default: capstone-cluster
+    Default: capstone-infras
   NumberOfWorkerNodes:
     Type: Number
     Default: 3

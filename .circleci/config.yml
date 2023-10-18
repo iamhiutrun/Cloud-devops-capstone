@@ -13,7 +13,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-{{ checksum "requirement.txt" }}
             - v1-dependencies-
       - run:
           name: Install python dependencies
@@ -27,7 +27,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v1-dependencies-{{ checksum "requirement.txt" }}
       - run:
           name: Run lint
           command: |
@@ -48,7 +48,7 @@ jobs:
             docker image tag $DOCKER_PATH:${CIRCLE_WORKFLOW_ID:0:7} $DOCKER_PATH
             docker images
       - run:
-          name: Upload Docker to Dockerhub
+          name: Upload to Dockerhub
           command: |
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker push $DOCKER_PATH:${CIRCLE_WORKFLOW_ID:0:7}
@@ -64,7 +64,7 @@ jobs:
       - run:
           name: Create EKS network
           command: |
-            if aws cloudformation describe-stacks --stack-name "capstone-network" 2>&1 | grep -q "does not exist"; then
+            if aws cloudformation describe-stacks --stack-name "capstone-network-infras" 2>&1 | grep -q "does not exist"; then
               echo "EKS network stack does not exist. Deploying..."
               aws cloudformation deploy \
                 --template-file template/network.yml \
@@ -86,26 +86,25 @@ jobs:
       - run:
           name: Create EKS Cluster
           command: |
-            if aws cloudformation describe-stacks --stack-name "apstone-cluster" 2>&1 | grep -q "does not exist"; then
+            if aws cloudformation describe-stacks --stack-name "capstone-infras" 2>&1 | grep -q "does not exist"; then
               echo "EKS Cluster stack does not exist. Deploying..."
               aws cloudformation deploy \
               --template-file template/infrastructure.yml \
               --tags project=capstone \
-              --stack-name "capstone-cluster" \
+              --stack-name "capstone-infras" \
               --region ${AWS_DEFAULT_REGION} \
               --capabilities CAPABILITY_NAMED_IAM \
-              --parameter-overrides ClusterName=capstone-cluster
+              --parameter-overrides ClusterName=capstone-infras
             else
-              echo "EKS Cluster stack exists."
+              echo "EKS stack exists."
             fi
-
   deploy:
     docker:
       - image: cimg/python:3.11.4
     parameters:
       cluster-name:
         type: string
-        default: "capstone-cluster"
+        default: "capstone-infras"
       aws-region:
         type: string
         default: "us-east-1"
@@ -145,7 +144,6 @@ workflows:
   deployment:
     jobs:
       - lint
-
       - build-and-push:
           filters:
             branches:
@@ -153,17 +151,14 @@ workflows:
                 - master
           requires:
             - "lint"
-
       - network-infrastructure:
           requires:
             - "build-and-push"
-
       - cluster-infrastructure:
           requires:
             - "network-infrastructure"
-
       - deploy:
-          cluster-name: capstone-cluster
+          cluster-name: capstone-infras
           aws-region: $AWS_DEFAULT_REGION
           requires:
             - "cluster-infrastructure"

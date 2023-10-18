@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Amazon EKS VPC - Private and Public subnets'
+Description: 'Amazon VPC - Private and Public subnets'
 
 Parameters:
 
@@ -28,7 +28,6 @@ Parameters:
     Type: String
     Default: 192.168.192.0/18
     Description: CidrBlock for private subnet 02 within the VPC
-
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -275,13 +274,13 @@ Resources:
 Outputs:
 
   PublicSubnetIds:
-    Description: Public Subnets IDs in the VPC
+    Description: Public Subnets 
     Value: !Join [ ",", [ !Ref PublicSubnet01, !Ref PublicSubnet02 ] ]
     Export:
       Name: PublicSubnetIds
   
   PrivateSubnetIds:
-    Description: Private Subnets IDs in the VPC
+    Description: Private Subnets 
     Value: !Join [ ",", [ !Ref PrivateSubnet01, !Ref PrivateSubnet02 ] ]
     Export:
       Name: PrivateSubnetIds
