@@ -150,7 +150,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - master
           requires:
             - "lint"
 
