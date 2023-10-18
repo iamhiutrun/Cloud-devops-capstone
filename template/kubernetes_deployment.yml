@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone_pj
+  labels:
+    app: capstone_pj
+  namespace: default
+spec:
+  replicas: 3
+  progressDeadlineSeconds: 3600
+  selector:
+    matchLabels:
+      app: capstone_pj
+  template:
+    metadata:
+      labels:
+        app: capstone_pj
+    spec:
+      containers:
+        - name: capstone_pj
+          image: 49shine/capstone:3230e0b
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone_pj
+  labels:
+    app: capstone_pj
+spec:
+  type: LoadBalancer
+  selector:
+    app: capstone_pj
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
